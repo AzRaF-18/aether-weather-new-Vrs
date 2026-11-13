@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#081026" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="AETHER v1.2" />
+  <title>AETHER v1.2</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #EF4444;
+      --accent-contrast: #FFFFFF;
+      --glass-bg: rgba(9, 25, 44, 0.36);
+      --glass-border: rgba(154, 216, 245, 0.45);
+      --text-primary: #FFFFFF;
+      --text-gold: #FDE047;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--text-primary);
+      background: #081026;
+      overflow-x: hidden;
+    }
+
+    #sky-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      transition: background 0.9s ease;
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: max(12px, env(safe-area-inset-top)) 0 max(28px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .px-16 {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Header */
+    .header-card {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .brand-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: linear-gradient(135deg, #081026, #2896F6);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+
+    .brand-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(11px, 3.6vw, 16px);
+      letter-spacing: 0.4px;
+      color: var(--accent);
+      -webkit-text-stroke: 0.7px var(--accent);
+      white-space: nowrap;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .pill-btn {
+      min-height: 40px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.12);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.12);
+      color: #FFFFFF;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 46px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(0, 0, 0, 0.32);
+      color: #FFFFFF;
+      padding: 0 38px 0 38px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .suggestions {
+      margin-top: 6px;
+      background: rgba(9, 25, 44, 0.92);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .suggestions.open {
+      display: block;
+    }
+
+    .suggestion-item {
+      padding: 11px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+
+    .chips-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+
+    .chips-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.10);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .chip.primary {
+      background: var(--accent);
+      color: var(--accent-contrast);
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    .chip.active {
+      border-color: #FACC15;
+      font-weight: 700;
+    }
+
+    /* Unified Sky + Scenery Stage */
+    .hero-sky-stage {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    #celestial-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 14px;
+    }
+
+    .hero-date {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-gold);
+      text-align: center;
+    }
+
+    .hero-city {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 23px;
+      line-height: 1.25;
+      text-align: center;
+      margin-top: 4px;
+      padding: 0 16px;
+    }
+
+    .hero-time {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 2px;
+      margin-top: 6px;
+      color: #FFFFFF;
+    }
+
+    .hero-temp {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 68px;
+      line-height: 1;
+      color: var(--accent);
+      text-shadow: 0 4px 22px rgba(0, 0, 0, 0.35);
+      margin-top: 8px;
+    }
+
+    .unit-pill {
+      margin-top: 8px;
+      padding: 9px 18px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: var(--accent-contrast);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      cursor: pointer;
+    }
+
+    .coords-audio-row {
+      margin-top: 10px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 0 16px;
+    }
+
+    .coords-label {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 10.5px;
+      letter-spacing: 1.3px;
+      color: var(--text-gold);
+    }
+
+    .audio-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(9, 19, 38, 0.50);
+      color: #FFFFFF;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #scenery-canvas {
+      display: block;
+      width: 100%;
+      height: 256px;
+    }
+
+    /* Google Earth & Maps Row */
+    .maps-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .map-btn {
+      min-height: 46px;
+      border-radius: 999px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .map-btn.primary {
+      background: var(--accent);
+      color: var(--accent-contrast);
+      border-color: transparent;
+    }
+
+    /* 2x2 Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .metric-card {
+      padding: 14px 12px;
+      border-radius: 22px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .metric-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: #FACC15;
+    }
+
+    .metric-value {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    /* Forecast Cards */
+    .forecast-card {
+      padding: 16px;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      color: #FACC15;
+      margin-bottom: 12px;
+    }
+
+    .hourly-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .hourly-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .hour-item {
+      min-width: 72px;
+      padding: 10px 8px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .daily-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .day-row {
+      display: grid;
+      grid-template-columns: 64px 30px 1fr 78px;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .range-track {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .range-fill {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #38BDF8, var(--accent));
+    }
+
+    /* Settings Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 600px;
+      background: rgba(9, 20, 42, 0.96);
+      border-top: 1px solid var(--glass-border);
+      border-radius: 26px 26px 0 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .swatches {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      cursor: pointer;
+    }
+
+    .swatch.selected {
+      border-color: #FFFFFF;
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="sky-backdrop"></div>
+
+  <main class="app-shell">
+    <div class="px-16">
+      <section class="glass-card header-card">
+        <div class="header-top">
+          <div class="brand-wrap">
+            <div class="brand-icon" aria-hidden="true">☁️</div>
+            <span class="brand-title">AETHER v1.2</span>
+          </div>
+          <div class="header-actions">
+            <button id="gps-btn" class="pill-btn" type="button">📍 Live GPS</button>
+            <button id="settings-btn" class="icon-btn" type="button" aria-label="Settings">⚙️</button>
+          </div>
+        </div>
+
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input id="search-input" class="search-input" type="search" placeholder="Search city or neighborhood…" autocomplete="off" />
+          <div id="suggestions" class="suggestions"></div>
+        </div>
+
+        <div class="chips-row" id="preset-chips"></div>
+      </section>
+    </div>
+
+    <!-- Unified Sky + Coordinate Scenery Stage (No card tile box) -->
+    <section class="hero-sky-stage">
+      <canvas id="celestial-canvas"></canvas>
+      <div class="hero-content">
+        <div id="hero-date" class="hero-date">Loading date…</div>
+        <h1 id="hero-city" class="hero-city">Swamibagh, Dhaka, Bangladesh</h1>
+        <div id="hero-time" class="hero-time">--:-- --</div>
+        <div id="hero-temp" class="hero-temp">--°</div>
+        <button id="unit-btn" class="unit-pill" type="button">SWITCH: °C → °F</button>
+        <div class="coords-audio-row">
+          <span id="hero-coords" class="coords-label">COORDS: 23.71, 90.42</span>
+          <button id="audio-btn" class="audio-pill" type="button">🔇 Audio Off</button>
+        </div>
+        <canvas id="scenery-canvas"></canvas>
+      </div>
+    </section>
+
+    <!-- Google Earth & Google Maps right beneath the scenery -->
+    <div class="px-16 maps-row">
+      <a id="earth-link" class="map-btn primary" target="_blank" rel="noopener">🌍 Google Earth</a>
+      <a id="maps-link" class="map-btn" target="_blank" rel="noopener">🗺️ Google Maps</a>
+    </div>
+
+    <!-- Humidity, Wind Speed, Feels Like, Air Pressure below scenery -->
+    <section class="px-16 metrics-grid">
+      <div class="glass-card metric-card">
+        <span class="metric-label">💧 HUMIDITY</span>
+        <span id="val-humidity" class="metric-value">--%</span>
+      </div>
+      <div class="glass-card metric-card">
+        <span class="metric-label">💨 WIND SPEED</span>
+        <span id="val-wind" class="metric-value">-- m/s</span>
+      </div>
+      <div class="glass-card metric-card">
+        <span class="metric-label">🌡️ FEELS LIKE</span>
+        <span id="val-feels" class="metric-value">--°</span>
+      </div>
+      <div class="glass-card metric-card">
+        <span class="metric-label">🧭 AIR PRESSURE</span>
+        <span id="val-pressure" class="metric-value">-- hPa</span>
+      </div>
+    </section>
+
+    <section class="px-16">
+      <div class="glass-card forecast-card">
+        <div class="section-title">HOURLY FORECAST</div>
+        <div id="hourly-list" class="hourly-scroll"></div>
+      </div>
+    </section>
+
+    <section class="px-16">
+      <div class="glass-card forecast-card">
+        <div class="section-title">7-DAY FORECAST</div>
+        <div id="daily-list" class="daily-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="settings-modal" class="modal-backdrop">
+    <div class="modal-sheet">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-family:'Orbitron',sans-serif;letter-spacing:1px;">SETTINGS</strong>
+        <button id="close-settings" class="pill-btn" type="button">Done</button>
+      </div>
+      <div>
+        <div class="metric-label" style="margin-bottom:8px;">ACCENT COLOR</div>
+        <div class="swatches" id="accent-swatches"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Temperature Unit</span>
+        <button id="modal-unit-btn" class="pill-btn" type="button">Celsius (°C)</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Ambient Neighborhood Sound</span>
+        <button id="modal-audio-btn" class="pill-btn" type="button">Off</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PRESETS = [
+      { label: 'Current GPS', gps: true },
+      { label: 'Swamibagh', name: 'Swamibagh, Dhaka, Bangladesh', lat: 23.7104, lon: 90.4184 },
+      { label: 'New York', name: 'New York, United States', lat: 40.7580, lon: -73.9855 },
+      { label: 'London', name: 'London, United Kingdom', lat: 51.5074, lon: -0.1278 },
+      { label: 'Tokyo', name: 'Tokyo, Japan', lat: 35.6762, lon: 139.6503 },
+    ];
+
+    const ACCENTS = ['#EF4444', '#FACC15', '#38BDF8', '#34D399', '#A78BFA', '#FB923C'];
+
+    const state = {
+      location: { ...PRESETS[1], isGps: false },
+      isFahrenheit: false,
+      accent: '#EF4444',
+      audioEnabled: false,
+      weather: null,
+      skyPhase: 'SKY_BLUE',
+      moonVisibility: 'FULL',
+      trafficOffset: 0,
+      audioCtx: null,
+      audioTimer: null,
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function toDisplayTemp(c) {
+      return Math.round(state.isFahrenheit ? (c * 9) / 5 + 32 : c);
+    }
+
+    function weatherEmoji(code, isDay) {
+      if (code === 0) return isDay ? '☀️' : '🌙';
+      if (code <= 2) return isDay ? '⛅' : '☁️';
+      if (code === 3) return '☁️';
+      if (code === 45 || code === 48) return '🌫️';
+      if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return '🌧️';
+      if ((code >= 71 && code <= 77) || code >= 85 && code <= 86) return '❄️';
+      if (code >= 95) return '⛈️';
+      return '☁️';
+    }
+
+    function resolveSkyPhase(isDay, minutes) {
+      const m = ((minutes % 1440) + 1440) % 1440;
+      if (m >= 420 && m <= 959 && (isDay || m >= 540)) return 'SKY_BLUE';
+      if (m >= 960 && m <= 1139) return 'BEFORE_SUNSET';
+      if (m >= 1140 && m <= 1169) return 'SUNSET';
+      if (m >= 1170 && m <= 1430) return 'NIGHT_CLOUDY'; // 7:30 PM - 11:50 PM
+      if (m >= 1431 || m <= 270) return 'MIDNIGHT';
+      return isDay ? 'SKY_BLUE' : 'DEEP_NIGHT';
+    }
+
+    function resolveMoonVisibility(code) {
+      if (code === 0) return 'FULL';
+      if (code === 1 || code === 2) return 'HALF';
+      return 'QUARTER';
+    }
+
+    function applySkyBackground(phase) {
+      const el = $('sky-backdrop');
+      const lightTop = phase === 'SKY_BLUE' || phase === 'BEFORE_SUNSET';
+      document.documentElement.style.setProperty('--text-primary', lightTop ? '#090D16' : '#FFFFFF');
+      document.documentElement.style.setProperty('--text-gold', lightTop ? '#1E3A8A' : '#FDE047');
+
+      const gradients = {
+        SKY_BLUE: 'linear-gradient(180deg, #7ED6FA 0%, #2896F6 52%, #1464D2 100%)',
+        BEFORE_SUNSET: 'linear-gradient(180deg, #FDE047 0%, #FB923C 52%, #D9480F 100%)',
+        SUNSET: 'linear-gradient(180deg, #EF4444 0%, #F97316 52%, #6D28D9 100%)',
+        NIGHT_CLOUDY: 'radial-gradient(circle at 86% 14%, rgba(169,169,169,0.42), transparent 55%), linear-gradient(180deg, #1E2538 0%, #5F6676 52%, #8F939A 100%)',
+        MIDNIGHT: 'linear-gradient(180deg, #0E1B4D 0%, #0C163E 52%, #0A1335 100%)',
+        DEEP_NIGHT: 'linear-gradient(180deg, #0F1836 0%, #0D1530 52%, #0B1229 100%)',
+      };
+      el.style.background = gradients[phase] || gradients.DEEP_NIGHT;
+    }
+
+    function resolveNeighborhoodStyle(name, lat, lon) {
+      const lower = (name || '').toLowerCase();
+      if (lower.includes('dhaka') || lower.includes('swamibagh') || lower.includes('shamibag') ||
+          (lat >= 23.62 && lat <= 23.92 && lon >= 90.30 && lon <= 90.52)) return 'DHAKA';
+      if (lower.includes('new york') || lower.includes('manhattan') ||
+          (lat >= 40.70 && lat <= 40.85 && lon >= -74.03 && lon <= -73.92)) return 'NYC';
+      if (lower.includes('london') || (lat >= 51.44 && lat <= 51.57 && lon >= -0.22 && lon <= 0.03)) return 'LONDON';
+      if (lower.includes('tokyo') || (lat >= 35.58 && lat <= 35.78 && lon >= 139.60 && lon <= 139.85)) return 'TOKYO';
+      return 'GLOBAL';
+    }
+
+    async function loadWeatherFor(loc) {
+      state.location = loc;
+      $('hero-city').textContent = loc.name;
+      $('hero-coords').textContent = `COORDS: ${loc.lat.toFixed(2)}, ${loc.lon.toFixed(2)}`;
+      $('earth-link').href = `https://earth.google.com/web/@${loc.lat.toFixed(5)},${loc.lon.toFixed(5)},400a,900d,35y,0h,45t,0r`;
+      $('maps-link').href = `https://www.google.com/maps/search/?api=1&query=${loc.lat.toFixed(5)},${loc.lon.toFixed(5)}`;
+      renderPresetChips();
+
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}` +
+        `&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,pressure_msl,wind_speed_10m` +
+        `&hourly=temperature_2m,weather_code,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+      state.weather = data;
+
+      const utcOffset = data.utc_offset_seconds || 0;
+      const localDate = new Date(Date.now() + utcOffset * 1000);
+      const localMins = localDate.getUTCHours() * 60 + localDate.getUTCMinutes();
+      const isDay = Boolean(data.current.is_day);
+      const code = data.current.weather_code;
+
+      state.skyPhase = resolveSkyPhase(isDay, localMins);
+      state.moonVisibility = resolveMoonVisibility(code);
+      applySkyBackground(state.skyPhase);
+
+      $('hero-date').textContent = localDate.toLocaleDateString('en-US', {
+        weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC',
+      });
+      $('hero-time').textContent = localDate.toLocaleTimeString('en-US', {
+        hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'UTC',
+      });
+
+      renderWeatherValues();
+    }
+
+    function renderWeatherValues() {
+      const data = state.weather;
+      if (!data) return;
+      const unit = state.isFahrenheit ? '°F' : '°C';
+      const c = data.current;
+
+      $('hero-temp').textContent = `${toDisplayTemp(c.temperature_2m)}${unit}`;
+      $('val-humidity').textContent = `${Math.round(c.relative_humidity_2m)}%`;
+      $('val-wind').textContent = `${c.wind_speed_10m.toFixed(1)} m/s`;
+      $('val-feels').textContent = `${toDisplayTemp(c.apparent_temperature)}${unit}`;
+      $('val-pressure').textContent = `${Math.round(c.pressure_msl)} hPa`;
+      $('unit-btn').textContent = state.isFahrenheit ? 'SWITCH: °F → °C' : 'SWITCH: °C → °F';
+      $('modal-unit-btn').textContent = state.isFahrenheit ? 'Fahrenheit (°F)' : 'Celsius (°C)';
+
+      const hourlyEl = $('hourly-list');
+      hourlyEl.innerHTML = '';
+      for (let i = 0; i < Math.min(12, data.hourly.time.length); i++) {
+        const div = document.createElement('div');
+        div.className = 'hour-item';
+        const label = i === 0 ? 'NOW' : data.hourly.time[i].slice(11, 16);
+        div.innerHTML = `<span>${label}</span><span>${weatherEmoji(data.hourly.weather_code[i], data.hourly.is_day[i])}</span><strong>${toDisplayTemp(data.hourly.temperature_2m[i])}°</strong>`;
+        hourlyEl.appendChild(div);
+      }
+
+      const dailyEl = $('daily-list');
+      dailyEl.innerHTML = '';
+      const minAll = Math.min(...data.daily.temperature_2m_min);
+      const maxAll = Math.max(...data.daily.temperature_2m_max);
+      const span = Math.max(1, maxAll - minAll);
+      for (let i = 0; i < Math.min(7, data.daily.time.length); i++) {
+        const d = new Date(`${data.daily.time[i]}T12:00:00Z`);
+        const dayName = i === 0 ? 'Today' : d.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
+        const lo = data.daily.temperature_2m_min[i];
+        const hi = data.daily.temperature_2m_max[i];
+        const leftPct = ((lo - minAll) / span) * 100;
+        const widthPct = Math.max(10, ((hi - lo) / span) * 100);
+        const row = document.createElement('div');
+        row.className = 'day-row';
+        row.innerHTML = `
+          <span>${dayName}</span>
+          <span>${weatherEmoji(data.daily.weather_code[i], true)}</span>
+          <div class="range-track"><div class="range-fill" style="left:${leftPct}%;width:${widthPct}%"></div></div>
+          <span style="text-align:right">${toDisplayTemp(lo)}° / ${toDisplayTemp(hi)}°</span>
+        `;
+        dailyEl.appendChild(row);
+      }
+    }
+
+    function drawCelestial(nowMs) {
+      const canvas = $('celestial-canvas');
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+      }
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+
+      const cx = w - 48;
+      const cy = 44;
+      const t = nowMs / 1000;
+      const phase = state.skyPhase;
+
+      // Stars at night
+      if (phase === 'NIGHT_CLOUDY' || phase === 'MIDNIGHT' || phase === 'DEEP_NIGHT') {
+        const stars = [[0.08,0.08],[0.22,0.14],[0.38,0.06],[0.55,0.12],[0.74,0.09],[0.90,0.16],[0.15,0.28],[0.46,0.25]];
+        stars.forEach(([rx, ry], idx) => {
+          const a = 0.35 + 0.5 * Math.abs(Math.sin(t * 0.9 + idx));
+          ctx.fillStyle = `rgba(255,255,255,${a.toFixed(2)})`;
+          ctx.beginPath();
+          ctx.arc(w * rx, h * ry, idx % 3 === 0 ? 2.2 : 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      // Celestial sun or cartoony moon
+      if (phase === 'SKY_BLUE' || phase === 'BEFORE_SUNSET' || phase === 'SUNSET') {
+        const g = ctx.createRadialGradient(cx, cy, 8, cx, cy, 52);
+        g.addColorStop(0, 'rgba(255,245,157,0.75)');
+        g.addColorStop(1, 'rgba(255,102,0,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 52, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = phase === 'SUNSET' ? '#EF4444' : '#FFE600';
+        ctx.strokeStyle = '#EA580C';
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      } else {
+        const vis = state.moonVisibility;
+        const glowAlpha = vis === 'FULL' ? 0.55 : vis === 'HALF' ? 0.38 : 0.25;
+        const mg = ctx.createRadialGradient(cx, cy, 6, cx, cy, 68);
+        mg.addColorStop(0, `rgba(255,255,255,${glowAlpha})`);
+        mg.addColorStop(0.5, `rgba(169,169,169,${glowAlpha * 0.8})`);
+        mg.addColorStop(1, 'rgba(169,169,169,0)');
+        ctx.fillStyle = mg;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 68, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.save();
+        ctx.beginPath();
+        if (vis === 'FULL') {
+          ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+        } else if (vis === 'HALF') {
+          ctx.arc(cx, cy, 22, Math.PI * 0.5, Math.PI * 1.5);
+          ctx.closePath();
+        } else {
+          ctx.arc(cx, cy, 22, Math.PI * 0.55, Math.PI * 1.45);
+          ctx.arc(cx + 8, cy, 19, Math.PI * 1.42, Math.PI * 0.58, true);
+          ctx.closePath();
+        }
+        ctx.fillStyle = '#F1F5F9';
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 2;
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Drifting clouds (extra armada during 7:30 PM - 11:50 PM NIGHT_CLOUDY)
+      const cloudCount = phase === 'NIGHT_CLOUDY' ? 8 : 3;
+      for (let i = 0; i < cloudCount; i++) {
+        const speed = 12 + (i % 3) * 6;
+        const x = (((t * speed + i * 95) % (w + 180)) - 90);
+        const y = 20 + (i % 4) * 34;
+        const cw = 64 + (i % 3) * 18;
+        ctx.fillStyle = phase === 'NIGHT_CLOUDY'
+          ? (i % 2 === 0 ? 'rgba(213,215,219,0.88)' : 'rgba(169,169,169,0.85)')
+          : 'rgba(255,255,255,0.80)';
+        ctx.beginPath();
+        ctx.roundRect(x, y, cw, 22, 11);
+        ctx.arc(x + cw * 0.3, y + 3, 13, 0, Math.PI * 2);
+        ctx.arc(x + cw * 0.62, y + 1, 16, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawScenery(nowMs) {
+      const canvas = $('scenery-canvas');
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (canvas.width !== w * dpr || canvas.height !== h * dpr) {
+        canvas.width = w * dpr;
+        canvas.height = h * dpr;
+      }
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+
+      const style = resolveNeighborhoodStyle(state.location.name, state.location.lat, state.location.lon);
+      const isDay = state.skyPhase === 'SKY_BLUE' || state.skyPhase === 'BEFORE_SUNSET';
+      const roadH = 40;
+      const walkH = 14;
+      const roadY = h - roadH - 4;
+      const walkY = roadY - walkH;
+
+      // Ground deck & full-width roadway
+      ctx.fillStyle = style === 'DHAKA' ? '#6B8E4E' : '#475569';
+      ctx.fillRect(0, walkY - 12, w, h - walkY + 12);
+
+      // Bigger 3D buildings across screen width
+      const bCount = 6;
+      const slotW = w / bCount;
+      const nycAds = ['COCA-COLA', 'BROADWAY', 'APPLE', 'NIKE AIR', 'NASDAQ', 'I ♥ NY'];
+      for (let i = 0; i < bCount; i++) {
+        const bw = slotW * 0.88;
+        const bx = i * slotW + slotW * 0.04;
+        const bh = style === 'NYC' || style === 'TOKYO'
+          ? h * (0.48 + ((i * 2) % 3) * 0.08)
+          : h * (0.38 + (i % 3) * 0.07);
+        const topY = walkY - bh;
+        const dx = 12;
+        const dy = 7;
+
+        // 3D Right side wall
+        ctx.fillStyle = style === 'NYC' ? '#1E293B' : style === 'DHAKA' ? '#965A42' : '#334155';
+        ctx.beginPath();
+        ctx.moveTo(bx + bw, topY);
+        ctx.lineTo(bx + bw + dx, topY - dy);
+        ctx.lineTo(bx + bw + dx, walkY - dy);
+        ctx.lineTo(bx + bw, walkY);
+        ctx.closePath();
+        ctx.fill();
+
+        // 3D Roof
+        ctx.fillStyle = '#CBD5E1';
+        ctx.beginPath();
+        ctx.moveTo(bx, topY);
+        ctx.lineTo(bx + dx, topY - dy);
+        ctx.lineTo(bx + bw + dx, topY - dy);
+        ctx.lineTo(bx + bw, topY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Front facade
+        ctx.fillStyle = style === 'NYC'
+          ? (i % 2 === 0 ? '#334155' : '#3B5170')
+          : style === 'DHAKA'
+            ? ['#D17B5C', '#EBD2B5', '#89B8A6', '#DC9D7E'][i % 4]
+            : ['#9FB0C4', '#DFD0BC', '#64748B'][i % 3];
+        ctx.fillRect(bx, topY, bw, bh);
+
+        // Windows
+        ctx.fillStyle = isDay ? 'rgba(186,230,253,0.82)' : 'rgba(250,204,21,0.88)';
+        for (let r = 0; r < 4; r++) {
+          for (let c = 0; c < 3; c++) {
+            ctx.fillRect(bx + 6 + c * (bw - 12) / 3, topY + 12 + r * (bh * 0.16), (bw - 18) / 3, 7);
+          }
+        }
+
+        // Shiny NYC Times Square display ads
+        if (style === 'NYC') {
+          const adY = topY + bh * 0.34;
+          ctx.fillStyle = i % 2 === 0 ? '#DC2626' : '#1E1B4B';
+          ctx.fillRect(bx + 2, adY, bw - 4, 16);
+          ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(bx + 2, adY, bw - 4, 16);
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = 'bold 7px Inter, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText(nycAds[i % nycAds.length], bx + bw / 2, adY + 11);
+        }
+
+        // Dhaka rooftop water tank
+        if (style === 'DHAKA' && i % 2 === 1) {
+          ctx.fillStyle = '#1E293B';
+          ctx.fillRect(bx + bw * 0.4, topY - 10, 14, 7);
+        }
+      }
+
+      // Sidewalk & Two-lane Roadway
+      ctx.fillStyle = style === 'DHAKA' ? '#D9C5A8' : '#CBD5E1';
+      ctx.fillRect(0, walkY, w, walkH);
+      ctx.fillStyle = style === 'DHAKA' ? '#46413C' : '#253144';
+      ctx.fillRect(0, roadY, w, roadH);
+
+      ctx.strokeStyle = style === 'NYC' ? '#FACC15' : '#FFFFFF';
+      ctx.setLineDash([12, 8]);
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(0, roadY + roadH / 2);
+      ctx.lineTo(w, roadY + roadH / 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Moving Vehicles
+      const t = nowMs / 1000;
+      const vehCount = 4;
+      for (let v = 0; v < vehCount; v++) {
+        const vx = ((t * (38 + v * 7) + v * 110) % (w + 80)) - 40;
+        const vy = v % 2 === 0 ? roadY + 6 : roadY + roadH - 15;
+        ctx.fillStyle = style === 'NYC' ? '#FACC15' : (v === 1 ? '#EF4444' : '#38BDF8');
+        ctx.beginPath();
+        ctx.roundRect(vx, vy, v === 1 ? 30 : 20, 10, 3);
+        ctx.fill();
+      }
+    }
+
+    function animate(nowMs) {
+      drawCelestial(nowMs);
+      drawScenery(nowMs);
+      requestAnimationFrame(animate);
+    }
+
+    function toggleAudio() {
+      state.audioEnabled = !state.audioEnabled;
+      $('audio-btn').textContent = state.audioEnabled ? '🔊 Live Street Audio' : '🔇 Audio Off';
+      $('modal-audio-btn').textContent = state.audioEnabled ? 'On' : 'Off';
+
+      if (!state.audioEnabled) {
+        clearInterval(state.audioTimer);
+        if (state.audioCtx) state.audioCtx.close().catch(() => {});
+        state.audioCtx = null;
+        return;
+      }
+
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      state.audioCtx = new AudioCtx();
+      const bufferSize = state.audioCtx.sampleRate * 2;
+      const buffer = state.audioCtx.createBuffer(1, bufferSize, state.audioCtx.sampleRate);
+      const out = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) out[i] = (Math.random() * 2 - 1) * 0.03;
+
+      const src = state.audioCtx.createBufferSource();
+      src.buffer = buffer;
+      src.loop = true;
+      const filter = state.audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 380;
+      src.connect(filter);
+      filter.connect(state.audioCtx.destination);
+      src.start();
+    }
+
+    function renderPresetChips() {
+      const container = $('preset-chips');
+      container.innerHTML = '';
+      PRESETS.forEach((p) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = p.label;
+        const active = p.gps ? state.location.isGps : (!state.location.isGps && Math.abs(state.location.lat - p.lat) < 0.02);
+        btn.className = `chip${p.gps ? ' primary' : ''}${active ? ' active' : ''}`;
+        btn.onclick = () => p.gps ? syncGps() : loadWeatherFor({ ...p, isGps: false });
+        container.appendChild(btn);
+      });
+    }
+
+    function syncGps() {
+      if (!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          let name = `GPS (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
+          try {
+            const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+            const j = await r.json();
+            if (j.display_name) name = j.display_name.split(',').slice(0, 3).join(',');
+          } catch {}
+          loadWeatherFor({ name, lat, lon, isGps: true });
+        },
+        () => loadWeatherFor({ ...PRESETS[1], isGps: false }),
+        { enableHighAccuracy: false, timeout: 8000 }
+      );
+    }
+
+    let searchTimer = null;
+    $('search-input').addEventListener('input', (e) => {
+      clearTimeout(searchTimer);
+      const q = e.target.value.trim();
+      const box = $('suggestions');
+      if (q.length < 2) {
+        box.classList.remove('open');
+        return;
+      }
+      searchTimer = setTimeout(async () => {
+        const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=5&language=en&format=json`);
+        const j = await r.json();
+        box.innerHTML = '';
+        (j.results || []).forEach((item) => {
+          const row = document.createElement('div');
+          row.className = 'suggestion-item';
+          const label = [item.name, item.admin1, item.country].filter(Boolean).join(', ');
+          row.textContent = label;
+          row.onclick = () => {
+            box.classList.remove('open');
+            $('search-input').value = '';
+            loadWeatherFor({ name: label, lat: item.latitude, lon: item.longitude, isGps: false });
+          };
+          box.appendChild(row);
+        });
+        box.classList.toggle('open', (j.results || []).length > 0);
+      }, 300);
+    });
+
+    $('unit-btn').onclick = $('modal-unit-btn').onclick = () => {
+      state.isFahrenheit = !state.isFahrenheit;
+      renderWeatherValues();
+    };
+    $('gps-btn').onclick = syncGps;
+    $('audio-btn').onclick = $('modal-audio-btn').onclick = toggleAudio;
+    $('settings-btn').onclick = () => $('settings-modal').classList.add('open');
+    $('close-settings').onclick = () => $('settings-modal').classList.remove('open');
+
+    ACCENTS.forEach((hex) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `swatch${hex === state.accent ? ' selected' : ''}`;
+      btn.style.background = hex;
+      btn.onclick = () => {
+        state.accent = hex;
+        document.documentElement.style.setProperty('--accent', hex);
+        document.documentElement.style.setProperty('--accent-contrast', hex === '#FACC15' ? '#090D16' : '#FFFFFF');
+        document.querySelectorAll('.swatch').forEach((s) => s.classList.toggle('selected', s === btn));
+      };
+      $('accent-swatches').appendChild(btn);
+    });
+
+    renderPresetChips();
+    loadWeatherFor({ ...PRESETS[1], isGps: false });
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
